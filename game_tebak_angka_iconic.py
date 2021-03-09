@@ -9,7 +9,7 @@ from os import path
 
 def select_main(menu_):
     print('Please enter username and pass')
-    name = input('Name: ')
+    name = input('Username: ')
     password = gp.getpass('password: ')
 
     if not path.exists("user_data.txt"):
@@ -128,8 +128,17 @@ def save_score(name, score):
 
 def select_daftar(name,password):
     daftar_object = open('user_data.txt','a')
-    #name = input('Name: ')
-    #password = gp.getpass('pasword: ')
+    name = ''
+    password = ''
+    while name == '':
+        name = input('Username: ')
+        if len(name) == 0:
+            print("username tidak boleh kosong ")
+
+    while password == '':
+        password = gp.getpass('password: ')
+        if len(password) == 0:
+            print("password tidak boleh kosong ")
     daftar_object.write(f'{name}#${password}\n')
     daftar_object.close()
     main('PENDAFTARAN BERHASIL')
