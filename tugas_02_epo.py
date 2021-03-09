@@ -1,13 +1,18 @@
 import numpy as np
 import pandas as pd
-from getpass import getpass
+import getpass as gp
 import os
 
+if ~os.path.exists('score.txt'):
+    open('score.txt', 'w').close()
+
+if ~os.path.exists('score.txt'):
+    open('score.txt', 'w').close()
 
 def select_main():
     print('Please enter username and pass')
     name = input('Name: ')
-    password = input('password: ')
+    password = gp.getpass('password: ')
     daftar_object = open('username.txt', 'r')
 
     if f'{name}#${password}' in daftar_object.read():
@@ -19,17 +24,17 @@ Aturan permainan:
    Nilai yang dibuat oleh komputer berkisar antara 10 - 20
    Jika tebakan salah, maka akan dilakukan penalti sebesar 10pts
    Jika yang dimasukkan bukanlah angka, anan diberlakukan penalti sebesar 20pts
-        
+
    GOOD LUCK WITH THE GAME!!!
 =============================================================================
         ''')
         play_the_game(name)
     else:
-        print('Username dan passowrd anda salah')
+        print('Username dan password anda salah')
 
 
 def play_the_game(name):
-    rand_guess = np.random.randint(0, 20)
+    rand_guess = np.random.randint(1, 20)
     i = 10
     print(rand_guess)
 
@@ -38,7 +43,7 @@ def play_the_game(name):
 
         print(f'''
 silahkan masukkan angka acak antara 1 - 20
-angka adalah bilangan ANGKA
+input adalah bilangan ANGKA
 score saat ini {score}
 ''')
         user_guess = input('masukkan angka: ')
@@ -49,21 +54,26 @@ score saat ini {score}
             input_type = 'text'
 
         if input_type == 'number':
-            if (int(user_guess) == rand_guess) :
+            if (int(user_guess) == rand_guess):
                 print(f'success menebak, score anda adalah {score}')
                 save_score(name, score)
                 i = -1
             else:
                 i -= 1
                 if int(user_guess) > rand_guess:
-                    word = 'BESAR'
+                    word1 = 'BESAR'
                 else:
-                    word = 'KECIL'
+                    word1 = 'KECIL'
+
+                if abs(int(user_guess) - rand_guess) < 5:
+                    word2 = ' namun sudah dekat'
+                else:
+                    word2 = '. Selisih tebakan masih terlalu besar'
 
                 if i == 0:
-                    print('----- Tebakan anda terlalu BESAR. GAME OVER, your score is 0')
+                    print(f'----- Tebakan anda terlalu {word1}{word2}. GAME OVER, your score is 0')
                 else:
-                    print(f'----- Tebakan anda terlalu {word}. Penalti 10.  silahkan coba lagi ----')
+                    print(f'----- Tebakan anda terlalu {word1}{word2}. Penalti 10.  silahkan coba lagi ----')
         else:
             i -= 2
             if i == 0:
@@ -73,8 +83,7 @@ score saat ini {score}
 
 
 def save_score(name, score):
-    if ~os.path.exists('score.txt'):
-        open('score.txt', 'w').close()
+
 
     score_object = open('score.txt', 'r').read().split('\n')[:-1]
     data_user = [val.split('#$')[0] for val in score_object]
@@ -106,7 +115,7 @@ def save_score(name, score):
 
 def select_daftar():
     name = input('Name: ')
-    password = input('pasword: ')
+    password = input('password: ')
 
     if ~os.path.exists('username.txt'):
         open('username.txt', 'w').close()
@@ -120,21 +129,24 @@ def select_daftar():
         daftar_object = open('username.txt', 'a')
         daftar_object.write(f'{name}#${password}\n')
 
+
 def select_highscore():
+    if ~os.path.exists('score.txt'):
 
+        score_object = open('score.txt', 'r').read().split('\n')[:-1]
+        data_user = [val.split('#$')[0] for val in score_object]
+        data_score = [int(val.split('#$')[1]) for val in score_object]
 
-    score_object = open('score.txt', 'r').read().split('\n')[:-1]
-    data_user = [val.split('#$')[0] for val in score_object]
-    data_score = [int(val.split('#$')[1]) for val in score_object]
+        score_df = pd.DataFrame(data=np.c_[data_user, data_score], columns=['user', 'score'])
+        score_df = score_df.sort_values(by=['score']).reset_index(drop=True)
+        score_df = score_df.iloc[:5]
+        print(f'**  username \t\t score  **')
+        print('*************************')
+        [print(f'** {val[0]} \t\t\t {val[1]} **') for val in score_df.values]
+        print('*************************')
 
-    score_df = pd.DataFrame(data=np.c_[data_user, data_score], columns=['user', 'score'])
-    score_df = score_df.sort_values(by=['score']).reset_index(drop=True)
-    score_df = score_df.iloc[:5]
-    print(f'**  username \t\t score  **')
-    print('*************************')
-    [print(f'** {val[0]} \t\t\t {val[1]} **') for val in score_df.values]
-    print('*************************')
-
+    else:
+        'no score data'
 
 
 def select_keluar():
@@ -152,7 +164,7 @@ program_to_run = {'1': select_main,
                   '4': select_keluar}
 
 while True:
-    try:
+    # try:
         print('''
 *****************************
 PERMAINAN TEBAK ANGKA
@@ -167,5 +179,5 @@ menu:
 
         select = input('Pilihan anda: ')
         program_to_run[str(select)]()
-    except:
-        'your input is not in option, please select between 1 - 4'
+    # except:
+    #     'your input is not in option, please select between 1 - 4'
