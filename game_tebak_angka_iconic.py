@@ -79,7 +79,7 @@ def play_the_game(name):
     time.sleep(3)
     print(f'''Silahkan masukkan angka acak antara 1 - 20
 [WARNING !!!] Inputan harus berupa ANGKA bilangan bulat''')   
-    print(rand_guess)
+    #print(rand_guess)
     win = 0
     while i > 0:
         score = i * 10
